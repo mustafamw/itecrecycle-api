@@ -12,7 +12,6 @@
   },
   "scripts": {
     "start": "node index.js",
-    "build": "node index.js",
     "dev": "nodemon index.js",
     "debug": "nodemon --inspect index.js",
     "lint": "eslint ./src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
@@ -53,6 +52,7 @@
     "generator",
     "starter project"
   ],
+  "heroku-run-build-script": false,
   "dependencies": {
     "axios": "^0.19.0",
     "babel-eslint": "^10.1.0",
