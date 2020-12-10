@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itec recycle</title>
+    <style>
+      header, .wrap, footer {
+        padding: 10px;
+        clear: both;
+      }
+      header {
+        background: #ececec;
+      }
+      header a img {
+        width: 40px;
+        float: left;
+        margin-right: 3px;
+      }
+      header a {
+        text-decoration: none;
+        color: black;
+      }
+      header a .title {
+        font-size: 26px;
+        color: black;
+      }
+      footer a img {
+        width: 30px;
+        float: left;
+        margin-right: 3px;
+      }
+      footer a {
+        text-decoration: none;
+        color: white;
+      }
+      footer a .title {
+        font-size: 16px;
+        color: white;
+      }
+      .details {
+        margin-bottom: 15px;
+      }
+      table th {
+        text-align: left;
+      }
+      table.invoice {
+        width: 100%;
+        background-color: #FFFFFF;
+        border-collapse: collapse;
+        border-width: 1px;
+        border: 1px solid #84b82d;
+        border-style: solid;
+        color: #010302;
+      }
+
+      table.invoice tr {
+        border-bottom: 1px solid #84b82d;
+      }
+
+      table.invoice td, table.invoice th {
+        border-width: 0px;
+        padding: 6px;
+      }
+
+      table.invoice thead {
+        background-color: #84B82D;
+        color: white;
+      }
+
+      .text-align-right {
+        text-align: right;
+      }
+
+      .button {
+        background: #007bff;
+        padding: 10px;
+        padding-left: 15px;
+        padding-right: 15px;
+        color: white !important;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      .button:hover {
+        background: #0069d9;
+      }
+
+      hr {
+        border: 1px solid #f5f5f5;
+        margin-top: 20px;
+      }
+
+      p.more_information{
+        font-size: 10px;
+        color: #c1c1c1;
+      }
+
+      .shares{
+        display: block;
+      }
+      .shares .share{
+        display: inline-block;
+      }
+      .shares img{
+        width: 35px;
+      }
+      footer {
+        background: black;
+        color: white !important;
+      }
+      footer .footer_container {
+        width: 100%;
+        clear: both;
+      }
+      footer a{
+        color: white !important;
+        text-decoration: underline !important;
+      }
+      footer a:hover{
+        color: white !important;
+        text-decoration: none !important;
+      }
+      footer .container{
+        width: 25%;
+        float: left;
+      }
+      footer h4{
+        border-bottom: 1px solid #84b82d;
+        padding-bottom: 5px;
+        margin-top: 0px;
+        margin-bottom: 5px;
+        float: left;
+        clear: both;
+      }
+      footer .copy_right{
+        clear: both;
+        text-align: center;
+        font-size: 10px;
+        margin-top: 5px;
+      }
+      .clear-both {
+        clear: both;
+      }
+    </style>
+  </head>
+  <body>
+    {{>header}}
+      <div class="wrap">
+      {{{body}}}
+      </div>
+    {{>footer}}
+  </body>
+</html>

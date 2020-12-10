@@ -1,0 +1,113 @@
+<div class="invoice-form">
+  <h1>ITEMS COLLECTION</h1>
+  <table class="details">
+    <tr>
+      <th>Full Name:</th>
+      <td>{{user.customer.firstName}} {{user.customer.lastName}}</td>
+    </tr>
+    <tr>
+      <th>Date:</th>
+      <td>{{currentDate}}</td>
+    </tr>
+  </table>
+  <table class="invoice">
+    <thead>
+      <tr>
+        <th width="80%">
+          Description
+        </th>
+        <th width="20%">
+          Quantity
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          Computers
+        </td>
+        <td>
+          {{itemsCollection.computers}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Laptops
+        </td>
+        <td>
+          {{itemsCollection.laptops}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Monitors
+        </td>
+        <td>
+          {{itemsCollection.monitors}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Servers
+        </td>
+        <td>
+          {{itemsCollection.servers}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Networking
+        </td>
+        <td>
+          {{itemsCollection.networking}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Hard Drive
+        </td>
+        <td>
+          {{itemsCollection.hardDrive}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Mobile Phones
+        </td>
+        <td>
+          {{itemsCollection.mobilePhones}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Landline Phones
+        </td>
+        <td>
+          {{itemsCollection.landlinePhones}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Tablets
+        </td>
+        <td>
+          {{itemsCollection.tablets}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Printers
+        </td>
+        <td>
+          {{itemsCollection.printers}}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <b>Others:<br/></b>
+          {{itemsCollection.others}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

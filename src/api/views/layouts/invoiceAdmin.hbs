@@ -1,0 +1,73 @@
+<div class="invoice-form">
+  <h1>INVOICE</h1>
+  <table class="details">
+    <tr>
+      <th>Reference No:</th>
+      <td>{{referenceNo}}</td>
+    </tr>
+    <tr>
+      <th>Email:</th>
+      <td>{{user.email}}</td>
+    </tr>
+    <tr>
+      <th>Full Name:</th>
+      <td>{{user.customer.firstName}} {{user.customer.lastName}}</td>
+    </tr>
+    <tr>
+      <th>Telephone No:</th>
+      <td>{{user.customer.telephoneNo}}</td>
+    </tr>
+    <tr>
+      <th>Mobile No:</th>
+      <td>{{user.customer.mobileNo}}</td>
+    </tr>
+    <tr>
+      <th>Date:</th>
+      <td>{{currentDate}}</td>
+    </tr>
+  </table>
+  <table class="invoice">
+    <thead>
+      <tr>
+        <th>
+          Description
+        </th>
+        <th>
+          Quantity
+        </th>
+        <th>
+          Unit Price
+        </th>
+        <th>
+          Total
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each products}}
+        <tr>
+          <td>
+            {{this.title}}
+          </td>
+          <td>
+            {{this.quantity}}
+          </td>
+          <td>
+            {{this.priceFormat}}
+          </td>
+          <td>
+            {{this.totalFormat}}
+          </td>
+        </tr>
+      {{/each}}
+      <tr>
+        <th class="text-align-right" colspan="3">
+          Total:
+        </th>
+        <td>
+          {{totalFormat}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
