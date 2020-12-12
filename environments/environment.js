@@ -25,6 +25,14 @@ const environment = {
   supportInfo: {
     email: process.env.SUPPORT_INFO_EMAIL,
   },
+  smtp: {
+    provider: process.env.SMTP_PROVIDER,
+    host: process.env.SMTP_HOST,
+    username: process.env.SMTP_USERNAME,
+    password: process.env.SMTP_PASSWORD,
+    port: process.env.SMTP_PORT,
+    secure: process.env.SMTP_SECURE,
+  },
 };
 
 module.exports = {

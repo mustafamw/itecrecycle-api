@@ -1,13 +1,40 @@
 const nodemailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
+const { environment } = require('../../environments/environment');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: '',
-    pass: '',
-  },
-});
+const {
+  provider,
+  host,
+  port,
+  username,
+  password,
+  secure,
+} = environment.smtp;
+
+const {
+  env,
+} = environment.express;
+
+let transporter;
+if (env === 'development') {
+  transporter = nodemailer.createTransport({
+    service: provider,
+    auth: {
+      user: username,
+      pass: password,
+    },
+  });
+} else {
+  transporter = nodemailer.createTransport({
+    host,
+    port,
+    auth: {
+      user: username,
+      pass: password,
+    },
+    secure,
+  });
+}
 
 const options = {
   viewEngine: {
