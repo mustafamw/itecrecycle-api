@@ -3,7 +3,7 @@
   "version": "1.2.2",
   "description": "Express boilerplate for building RESTful APIs",
   "author": "Daniel Sousa <sousa.dfs@gmail.com>",
-  "main": "src/index.js",
+  "main": "src/app.js",
   "private": false,
   "license": "MIT",
   "engines": {
@@ -11,9 +11,9 @@
     "npm": "6.x"
   },
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "debug": "nodemon --inspect index.js",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "debug": "nodemon --inspect app.js",
     "lint": "eslint ./src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
     "test": "cross-env nyc --reporter=html --reporter=text mocha --timeout 20000 --exit --recursive src/api/tests",
     "test:unit": "cross-env mocha src/api/tests/unit",
