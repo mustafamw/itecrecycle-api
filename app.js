@@ -18,6 +18,8 @@ try {
   console.error('Unable to connect to the database:', error);
 }
 
+console.log(port)
+
 // listen to requests
 app.listen(port, () => logger.info(`server started on port ${port} (${env})`));
 
