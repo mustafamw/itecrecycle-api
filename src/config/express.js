@@ -44,11 +44,12 @@ app.use(helmet());
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors({ origin: '*' }));
 
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Allow-Methods', '*');
-//   res.header('Access-Control-Allow-Headers', '*');
-// });
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  next();
+});
 
 // mount api v1 routes
 app.use('/v1', routes);
