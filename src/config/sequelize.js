@@ -9,6 +9,8 @@ const {
   port,
 } = environment.mysql;
 
+console.log(environment.mysql)
+
 const sequelize = new Sequelize(
   database,
   username,
