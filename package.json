@@ -3,7 +3,7 @@
   "version": "1.2.2",
   "description": "Express boilerplate for building RESTful APIs",
   "author": "Daniel Sousa <sousa.dfs@gmail.com>",
-  "main": "src/app.js",
+  "main": "app.js",
   "private": false,
   "license": "MIT",
   "engines": {
