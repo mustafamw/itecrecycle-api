@@ -9,6 +9,10 @@ const {
   port,
 } = environment.mysql;
 
+const {
+  env
+} = environment.express;
+
 
 const sequelize = new Sequelize(
   database,
@@ -18,6 +22,7 @@ const sequelize = new Sequelize(
     host,
     port,
     dialect: 'mysql',
+    logging: env !== 'production'
   },
 );
 
