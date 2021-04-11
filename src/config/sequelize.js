@@ -10,6 +10,15 @@ const {
 } = environment.mysql;
 
 
-const sequelize = new Sequelize(`mysql://${username}:${password}@${host}:${port}/${database}`);
+const sequelize = new Sequelize(
+  database,
+  username,
+  password,
+  {
+    host,
+    port,
+    dialect: 'mysql',
+  },
+);
 
 module.exports = sequelize;
