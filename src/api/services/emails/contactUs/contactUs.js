@@ -11,8 +11,8 @@ exports.email = async (data) => {
     email: emailSupport,
   } = environment.supportInfo;
   const mailOptions = {
-    from: emailSupport,
-    to: data.email,
+    from: data.email,
+    to: emailSupport,
     subject: `${appName} - Enquiry`,
     template: 'layouts/contactUs',
     context: {
