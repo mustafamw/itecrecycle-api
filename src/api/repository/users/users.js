@@ -1,6 +1,5 @@
 const APIError = require('../../utils/APIError');
 const httpStatus = require('http-status');
-const logger = require('../../../config/logger');
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const {
