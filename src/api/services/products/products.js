@@ -3,6 +3,10 @@ const httpStatus = require('http-status');
 const logger = require('../../../config/logger');
 const productRepository = require('../../repository/products/products');
 const { currencyFormat } = require('../../utils/formatCurrency');
+var fs = require('fs');
+const axios = require('axios');
+const { environment } = require('../../../../environments/environment');
+const FormData = require('form-data');
 
 exports.getProducts = async (pageNo) => {
   try {
@@ -96,3 +100,38 @@ exports.isProductsValid = async (basket) => {
   }
 };
 
+exports.createProduct = async (jwtClaim, payload, image) => {
+  try {
+    const { resources } = environment.express;
+    const { roles } = jwtClaim;
+    if (!roles.includes('admin')) {
+      throw new APIError({
+        status: httpStatus.UNAUTHORIZED,
+      });
+    }
+    const { destination, mimetype, path, size, filename } = image;
+    const pathToFile = `${destination}${filename}`;
+    const formData = new FormData();
+    formData.append("image", fs.createReadStream(pathToFile), filename);
+    const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
+      headers: {
+        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
+      }
+    });
+    const { path: resourcesPath } = response;
+    payload.image = resourcesPath;
+    const data = await productRepository.createProduct(payload);
+    if (fs.existsSync(pathToFile)) {
+      fs.unlinkSync(pathToFile)
+    }
+    return data;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    logger.error('ProductService:createProduct:error', error);
+    throw new APIError({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}

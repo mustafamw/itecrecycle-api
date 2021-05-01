@@ -98,3 +98,17 @@ exports.updateProductsStock = async (products) => {
     });
   }
 };
+
+exports.createProduct = async (payload) => {
+  try {
+    return await ProductsModel.create(payload);
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    logger.error('ProductRepository:createProduct:error', error);
+    throw new APIError({
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+    });
+  }
+}

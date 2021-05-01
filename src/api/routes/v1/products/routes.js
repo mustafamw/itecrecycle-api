@@ -2,6 +2,19 @@ const express = require('express');
 const validate = require('express-validation');
 const ProductsController = require('../../../controllers/products/products');
 const schema = require('../../../schemas/products/products');
+const multer  = require('multer');
+const uuidv4 = require('uuid');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/data/uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${uuidv4()}.png`)
+  }
+})
+
+const upload = multer({storage: storage})
 
 const router = express.Router();
 
@@ -31,5 +44,8 @@ router.route('/')
 
 router.route('/:productId')
   .get(validate(schema.productId), ProductsController.getProductId);
+
+router.route('/create')
+  .post(validate(schema.productCreate), upload.single('image'), ProductsController.createProduct);
 
 module.exports = router;

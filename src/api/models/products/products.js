@@ -7,6 +7,7 @@ const ProductsModel = sequelize.define(
   'products', {
     productId: {
       type: DataTypes.INTEGER(11),
+      autoIncrement: true,
       primaryKey: true,
       field: 'product_id',
     },
@@ -47,9 +48,9 @@ const ProductsModel = sequelize.define(
   {
     hooks: {
       async afterFind(product) {
-        const { host } = environment.express;
+        const { resources } = environment.express;
         forEach(product, (e) => {
-          e.image = `${host}/${e.image}`;
+          e.image = `${resources}/${e.image}`;
         });
       },
     },

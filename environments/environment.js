@@ -13,6 +13,7 @@ const environment = {
     env: process.env.NODE_ENV,
     host: process.env.HOST,
     domain: process.env.DOMAIN,
+    resources: process.env.RESOURCES,
     port: process.env.PORT,
   },
   mysql: {
