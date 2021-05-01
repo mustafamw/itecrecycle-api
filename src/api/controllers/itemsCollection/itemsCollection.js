@@ -1,6 +1,5 @@
 const itemsCollectionService = require('../../services/itemsCollection/itemsCollection');
 
-
 exports.itemsCollection = async (req, res, next) => {
   try {
     const { authorization: jwtPayload } = req.headers;

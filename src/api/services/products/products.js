@@ -9,31 +9,11 @@ const { environment } = require('../../../../environments/environment');
 const FormData = require('form-data');
 
 exports.getProducts = async (pageNo) => {
-  try {
-    return await productRepository.getProducts(pageNo);
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('ProductService:getProducts:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  return await productRepository.getProducts(pageNo);
 };
 
 exports.getProductId = async (productId) => {
-  try {
-    return await productRepository.getProductId(productId);
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('ProductService:getProducts:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  return await productRepository.getProductId(productId);
 };
 
 const isProductIdsValid = (productIds, products) => {
@@ -81,57 +61,37 @@ const checkProductMatch = (baskets, productsById) => {
 };
 
 exports.isProductsValid = async (basket) => {
-  try {
-    const productIds = [];
-    basket.forEach((e) => {
-      productIds.push(e.productId);
-    });
-    const productsById = await productRepository.getProductsById(productIds);
-    isProductIdsValid(productsById, productIds);
-    return checkProductMatch(basket, productsById);
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('ProductService:isProductsValid:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  const productIds = [];
+  basket.forEach((e) => {
+    productIds.push(e.productId);
+  });
+  const productsById = await productRepository.getProductsById(productIds);
+  isProductIdsValid(productsById, productIds);
+  return checkProductMatch(basket, productsById);
 };
 
 exports.createProduct = async (jwtClaim, payload, image) => {
-  try {
-    const { resources } = environment.express;
-    const { roles } = jwtClaim;
-    if (!roles.includes('admin')) {
-      throw new APIError({
-        status: httpStatus.UNAUTHORIZED,
-      });
-    }
-    const { destination, mimetype, path, size, filename } = image;
-    const pathToFile = `${destination}${filename}`;
-    const formData = new FormData();
-    formData.append("image", fs.createReadStream(pathToFile), filename);
-    const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
-      headers: {
-        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
-      }
-    });
-    const { path: resourcesPath } = response;
-    payload.image = resourcesPath;
-    const data = await productRepository.createProduct(payload);
-    if (fs.existsSync(pathToFile)) {
-      fs.unlinkSync(pathToFile)
-    }
-    return data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('ProductService:createProduct:error', error);
+  const { resources } = environment.express;
+  const { roles } = jwtClaim;
+  if (!roles.includes('admin')) {
     throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
+      status: httpStatus.UNAUTHORIZED,
     });
   }
+  const { destination, mimetype, path, size, filename } = image;
+  const pathToFile = `${destination}${filename}`;
+  const formData = new FormData();
+  formData.append("image", fs.createReadStream(pathToFile), filename);
+  const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
+    headers: {
+      'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
+    }
+  });
+  const { path: resourcesPath } = response;
+  payload.image = resourcesPath;
+  const data = await productRepository.createProduct(payload);
+  if (fs.existsSync(pathToFile)) {
+    fs.unlinkSync(pathToFile)
+  }
+  return data;
 }

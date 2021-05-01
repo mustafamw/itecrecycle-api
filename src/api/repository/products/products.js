@@ -1,6 +1,3 @@
-const APIError = require('../../utils/APIError');
-const httpStatus = require('http-status');
-const logger = require('../../../config/logger');
 const config = require('../../../config/config');
 const { dataResponse } = require('../../utils/dataResponse');
 const pagination = require('../../utils/pagination');
@@ -11,62 +8,35 @@ const {
 } = require('../../models/products/products');
 
 exports.getProducts = async (pageNo) => {
-  try {
-    const { limit } = config.pagination;
-    const offset = (pageNo - 1) * limit;
-    const data = await ProductsModel.findAndCountAll({
-      offset,
-      limit,
-      attributes: {
-        exclude: ['description', 'createdAt', 'updatedAt'],
+  const { limit } = config.pagination;
+  const offset = (pageNo - 1) * limit;
+  const data = await ProductsModel.findAndCountAll({
+    offset,
+    limit,
+    attributes: {
+      exclude: ['description', 'createdAt', 'updatedAt'],
+    },
+    where: {
+      active: true,
+      stock: {
+        [Op.gte]: 1,
       },
-      where: {
-        active: true,
-        stock: {
-          [Op.gte]: 1,
-        },
-      },
-    });
-    return dataResponse(
-      data.rows,
-      pagination(pageNo, data.rows.length, data.count, limit),
-    );
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('ProductRepository:getProducts:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+    },
+  });
+  return dataResponse(
+    data.rows,
+    pagination(pageNo, data.rows.length, data.count, limit),
+  );
 };
 
 exports.getProductId = async (productId) => {
-  try {
-    const data = await ProductsModel.findOne({
-      where: {
-        productId,
-        active: true,
-      },
-    });
-    if (data) {
-      return dataResponse(data);
-    }
-    logger.info(`ProductRepository:getProductId:info not found productId:${productId}`);
-    throw new APIError({
-      status: httpStatus.NOT_FOUND,
-      message: 'Page Not Found',
-    });
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('ProductRepository:getProductId:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  const data = await ProductsModel.findOne({
+    where: {
+      productId,
+      active: true,
+    },
+  });
+  return dataResponse(data);
 };
 
 
@@ -87,28 +57,11 @@ exports.getProductsById = async (productIds) => {
 
 
 exports.updateProductsStock = async (products) => {
-  try {
-    await Promise.all(products.map(async (product) => {
-      await ProductsModel.decrement(['stock'], { by: product.quantity, where: { productId: product.productProductId } });
-    }));
-  } catch (error) {
-    logger.error('ProductRepository:updateProductsStock:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  await Promise.all(products.map(async (product) => {
+    await ProductsModel.decrement(['stock'], { by: product.quantity, where: { productId: product.productProductId } });
+  }));
 };
 
 exports.createProduct = async (payload) => {
-  try {
-    return await ProductsModel.create(payload);
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('ProductRepository:createProduct:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  return await ProductsModel.create(payload);
 }

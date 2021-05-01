@@ -28,44 +28,34 @@ const unauthorized = (message) => {
 };
 
 exports.getUserDetails = async (payload) => {
-  try {
-    const {
-      email = null,
-      userId = null,
-    } = payload;
-    const data = await UsersModel.findOne({
-      attributes: ['userId', 'email', 'password', 'active'],
-      where: {
-        [Op.or]: [
-          { email },
-          { userId },
-        ],
-      },
-      include: [
-        {
-          attributes: ['roleCode'],
-          model: RolesModel,
-          through: {
-            attributes: [],
-          },
-          required: false,
-        },
-        {
-          model: CustomersModel,
-          required: false,
-        },
+  const {
+    email = null,
+    userId = null,
+  } = payload;
+  const data = await UsersModel.findOne({
+    attributes: ['userId', 'email', 'password', 'active'],
+    where: {
+      [Op.or]: [
+        { email },
+        { userId },
       ],
-    });
-    return data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:login:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+    },
+    include: [
+      {
+        attributes: ['roleCode'],
+        model: RolesModel,
+        through: {
+          attributes: [],
+        },
+        required: false,
+      },
+      {
+        model: CustomersModel,
+        required: false,
+      },
+    ],
+  });
+  return data;
 };
 
 const checkEmailExist = async (payload) => {
@@ -86,244 +76,154 @@ const checkEmailExist = async (payload) => {
 };
 
 const checkUserIsActive = async (payload) => {
-  try {
-    const {
-      uid,
-    } = payload;
-    const data = await UsersModel.findByPk(uid, {
-      attributes: ['active'],
-    });
-    if (!data) {
-      throw new APIError({
-        status: NOT_FOUND,
-        message: 'Link no longer valid',
-      });
-    }
-    if (data.active) {
-      throw new APIError({
-        status: httpStatus.CONFLICT,
-        message: 'Your account is already activated',
-      });
-    }
-    return;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:checkUserIsActive:error', error);
+  const {
+    uid,
+  } = payload;
+  const data = await UsersModel.findByPk(uid, {
+    attributes: ['active'],
+  });
+  if (!data) {
     throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
+      status: NOT_FOUND,
+      message: 'Link no longer valid',
     });
   }
+  if (data.active) {
+    throw new APIError({
+      status: httpStatus.CONFLICT,
+      message: 'Your account is already activated',
+    });
+  }
+  return;
 };
 
 const updateUserActive = async (payload) => {
-  try {
-    const {
-      uid,
-    } = payload;
-    const data = await UsersModel.update(
-      {
-        active: true,
+  const {
+    uid,
+  } = payload;
+  const data = await UsersModel.update(
+    {
+      active: true,
+    },
+    {
+      where: {
+        user_id: uid,
       },
-      {
-        where: {
-          user_id: uid,
-        },
-      },
-    );
-    if (!data) {
-      throw new APIError({
-        status: NOT_FOUND,
-      });
-    }
-    if (data[0] === 0) {
-      throw new APIError({
-        status: NOT_IMPLEMENTED,
-      });
-    }
-    return dataResponse({ message: 'Your account is activated' });
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:updateUserActive:error', error);
+    },
+  );
+  if (!data) {
     throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
+      status: NOT_FOUND,
     });
   }
+  if (data[0] === 0) {
+    throw new APIError({
+      status: NOT_IMPLEMENTED,
+    });
+  }
+  return dataResponse({ message: 'Your account is activated' });
 };
 
 const updateUserPassword = async (payload) => {
-  try {
-    const {
-      uid,
+  const {
+    uid,
+    password,
+  } = payload;
+  const data = await UsersModel.update(
+    {
       password,
-    } = payload;
-    const data = await UsersModel.update(
-      {
-        password,
+    },
+    {
+      individualHooks: true,
+      where: {
+        user_id: uid,
       },
-      {
-        individualHooks: true,
-        where: {
-          user_id: uid,
-        },
-      },
-    );
-    if (!data) {
-      throw new APIError({
-        status: NOT_FOUND,
-      });
-    }
-    if (data[0] === 0) {
-      throw new APIError({
-        status: NOT_IMPLEMENTED,
-      });
-    }
-    return;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:updateUserPassword:error', error);
+    },
+  );
+  if (!data) {
     throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
+      status: NOT_FOUND,
     });
   }
+  if (data[0] === 0) {
+    throw new APIError({
+      status: NOT_IMPLEMENTED,
+    });
+  }
+  return;
 };
 
 exports.signup = async (payload) => {
-  try {
-    await checkEmailExist(payload);
-    const {
-      userId,
-      email,
-    } = await UsersModel.create(payload);
-    await CustomersModel.create({
-      ...payload,
-      userUserId: userId,
-    });
-    await UsersRolesModel.create({
-      userUserId: userId,
-      roleRoleId: 2,
-    });
-    return await this.getUserDetails({
-      email,
-    });
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:signup:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  await checkEmailExist(payload);
+  const {
+    userId,
+    email,
+  } = await UsersModel.create(payload);
+  await CustomersModel.create({
+    ...payload,
+    userUserId: userId,
+  });
+  await UsersRolesModel.create({
+    userUserId: userId,
+    roleRoleId: 2,
+  });
+  return await this.getUserDetails({
+    email,
+  });
 };
 
 exports.login = async (payload) => {
-  try {
-    const {
-      password,
-    } = payload;
-    const data = await this.getUserDetails(payload);
-    if (data) {
-      const valid = await bcrypt.compare(password, data.password);
-      if (!data.active) {
-        throw new APIError({
-          status: httpStatus.FORBIDDEN,
-          message: 'Please active your account',
-        });
-      }
-      if (valid) {
-        return data;
-      }
-      return unauthorized('Incorrect Login');
+  const {
+    password,
+  } = payload;
+  const data = await this.getUserDetails(payload);
+  if (data) {
+    const valid = await bcrypt.compare(password, data.password);
+    if (!data.active) {
+      throw new APIError({
+        status: httpStatus.FORBIDDEN,
+        message: 'Please active your account',
+      });
+    }
+    if (valid) {
+      return data;
     }
     return unauthorized('Incorrect Login');
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:login:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
   }
+  return unauthorized('Incorrect Login');
 };
 
 exports.activate = async (payload) => {
-  try {
-    await checkUserIsActive(payload);
-    return await updateUserActive(payload);
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:activate:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  await checkUserIsActive(payload);
+  return await updateUserActive(payload);
 };
 
 exports.forgotPassword = async (payload) => {
-  try {
-    const data = await this.getUserDetails(payload);
-    if (!data) {
-      return false;
-    }
-    return data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:forgotPassword:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+  const data = await this.getUserDetails(payload);
+  if (!data) {
+    return false;
   }
+  return data;
 };
 
 exports.resetPassword = async (headers, payload) => {
-  try {
-    const {
-      uid,
-    } = headers.authorization;
-    const {
-      password,
-    } = payload;
-    const data = await updateUserPassword({
-      uid,
-      password,
-    });
-    if (!data) {
-      return false;
-    }
-    return data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:forgotPassword:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
+  const {
+    uid,
+  } = headers.authorization;
+  const {
+    password,
+  } = payload;
+  const data = await updateUserPassword({
+    uid,
+    password,
+  });
+  if (!data) {
+    return false;
   }
+  return data;
 };
 
 exports.resendActivation = async (payload) => {
-  try {
-    const data = await this.getUserDetails(payload);
-    return data;
-  } catch (error) {
-    if (error instanceof APIError) {
-      throw error;
-    }
-    logger.error('UsersRepository:resendActivation:error', error);
-    throw new APIError({
-      status: httpStatus.INTERNAL_SERVER_ERROR,
-    });
-  }
+  const data = await this.getUserDetails(payload);
+  return data;
 };

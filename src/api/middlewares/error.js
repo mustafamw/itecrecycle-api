@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const expressValidation = require('express-validation');
 const APIError = require('../utils/APIError');
 const { environment } = require('../../../environments/environment');
+const logger = require('../../config/logger');
 
 const env = environment.express.env;
 
@@ -20,7 +21,8 @@ const handler = (err, req, res, next) => {
   if (env !== 'development') {
     delete response.stack;
   }
-
+  logger.error(err.stack)
+  console.error(err)
   res.status(err.status);
   res.json(response);
 };
