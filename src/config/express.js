@@ -6,6 +6,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const routes = require('../api/routes/v1');
 const error = require('../api/middlewares/error');
+const path = require('path');
 
 /**
 * Express instance
@@ -13,7 +14,8 @@ const error = require('../api/middlewares/error');
 */
 const app = express();
 
-app.use(express.static(`${__dirname}/../../public`));
+// app.use(express.static(`${__dirname}/../../public`));
+app.use(express.static(path.join(__dirname, '../../public')));
 
 app.set('etag', false);
 

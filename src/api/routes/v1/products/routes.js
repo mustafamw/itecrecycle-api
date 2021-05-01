@@ -4,10 +4,11 @@ const ProductsController = require('../../../controllers/products/products');
 const schema = require('../../../schemas/products/products');
 const multer  = require('multer');
 const uuidv4 = require('uuid');
+const path = require('path');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/data/uploads/')
+    cb(null, path.join(__dirname, '../../../../../public/data/uploads'))
   },
   filename: function (req, file, cb) {
     cb(null, `${uuidv4()}.png`)
