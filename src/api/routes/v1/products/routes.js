@@ -9,8 +9,7 @@ const path = require('path');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // cb(null, './public/data/uploads')
-    console.log('__dirname2', __dirname)
-    cb(null, `${__dirname}/../../../../../public/data/uploads`)
+    cb(null, path.join(__dirname, '../../../../../public'))
   },
   filename: function (req, file, cb) {
     cb(null, `${uuidv4()}.png`)
