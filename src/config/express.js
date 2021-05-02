@@ -14,8 +14,6 @@ const path = require('path');
 */
 const app = express();
 
-// app.use(express.static(`../../public`));
-console.log('__dirname', __dirname)
 app.use(express.static(path.join(__dirname, '../../public')));
 
 app.set('etag', false);
