@@ -9,6 +9,7 @@ const { environment } = require('../../../../environments/environment');
 const FormData = require('form-data');
 const expressValidation = require('express-validation');
 const error = require('../../middlewares/error');
+const { getImageFormUrl } = require('../../utils/imageUrl');
 
 exports.getProducts = async (pageNo) => {
   return await productRepository.getProducts(pageNo);
@@ -88,19 +89,20 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   }
   const { destination, mimetype, path, size, filename } = image;
   const pathToFile = `${destination}/${filename}`;
+  const pathImageurl = `${host}/data/uploads/${filename}`;
+  const imageBlob = await getImageFormUrl(pathImageurl)
   const formData = new FormData();
-  formData.append("image", fs.createReadStream(pathToFile), filename);
+  formData.append("image", imageBlob, filename);
   const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
     headers: {
       'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
     }
   });
-  console.log(filename)
   const { path: resourcesPath } = response;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
-  // if (fs.existsSync(pathToFile)) {
-  //   fs.unlinkSync(pathToFile)
-  // }
+  if (fs.existsSync(pathToFile)) {
+    fs.unlinkSync(pathToFile)
+  }
   return data;
 }
