@@ -1,14 +1,10 @@
-const request = require('request');
+const http = require('http');const fs = require('fs');
 
 const getImageFormUrl = (url) => {
     return new Promise ((resolve, reject) => {
-      request({ url, encoding: null }, (err, resp, buffer) => {
-        if (resp.statusCode !== 200) {
-          reject(resp)
-        } else {
-          resolve(buffer)
-        }
-      });
+      http.get(url, function(body) {
+        resolve(body)
+      })
     })
   }
 
