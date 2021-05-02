@@ -96,11 +96,13 @@ exports.createProduct = async (jwtClaim, payload, image) => {
       'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
     }
   });
+  console.log(response)
   const { path: resourcesPath } = response;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
   if (fs.existsSync(pathToFile)) {
-    fs.unlinkSync(pathToFile)
+    console.log('existsSync')
+    // fs.unlinkSync(pathToFile)
   }
   return data;
 }
