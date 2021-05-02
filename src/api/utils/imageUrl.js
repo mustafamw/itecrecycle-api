@@ -3,7 +3,11 @@ const request = require('request');
 const getImageFormUrl = (url) => {
     return new Promise ((resolve, reject) => {
       request({ url, encoding: null }, (err, resp, buffer) => {
-        resolve(buffer)
+        if (resp.statusCode !== 200) {
+          reject(resp)
+        } else {
+          resolve(buffer)
+        }
       });
     })
   }

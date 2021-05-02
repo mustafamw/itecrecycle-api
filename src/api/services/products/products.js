@@ -74,37 +74,43 @@ exports.isProductsValid = async (basket) => {
 };
 
 exports.createProduct = async (jwtClaim, payload, image) => {
-  const { resources, host } = environment.express;
-  const { roles } = jwtClaim;
-  if (!roles.includes('admin')) {
+  try {
+    const { resources, host } = environment.express;
+    const { roles } = jwtClaim;
+    if (!roles.includes('admin')) {
+      throw new APIError({
+        status: httpStatus.UNAUTHORIZED,
+      });
+    }
+    if (!image) {
+      throw new expressValidation.ValidationError(
+        error.imageRequired.errors,
+        error.imageRequired.request
+      )
+    }
+    const { destination, mimetype, path, size, filename } = image;
+    const pathToFile = `${destination}/${filename}`;
+    const pathImageurl = `${host}/data/uploads/${filename}`;
+    const imageBlob = await getImageFormUrl(pathImageurl)
+    const formData = new FormData();
+    formData.append("image", imageBlob, filename);
+    const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
+      headers: {
+        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
+      }
+    });
+    console.log(resources, response)
+    const { path: resourcesPath } = response;
+    payload.image = resourcesPath;
+    const data = await productRepository.createProduct(payload);
+    if (fs.existsSync(pathToFile)) {
+      fs.unlinkSync(pathToFile)
+    }
+    return data;
+  } catch (error) {
     throw new APIError({
-      status: httpStatus.UNAUTHORIZED,
+      status: error.statusCode,
+      message: error.statusMessage
     });
   }
-  if (!image) {
-    throw new expressValidation.ValidationError(
-      error.imageRequired.errors,
-      error.imageRequired.request
-    )
-  }
-  const { destination, mimetype, path, size, filename } = image;
-  const pathToFile = `${destination}/${filename}`;
-  const pathImageurl = `${host}/data/uploads/${filename}`;
-  console.log(pathImageurl)
-  const imageBlob = await getImageFormUrl(pathImageurl)
-  const formData = new FormData();
-  formData.append("image", imageBlob, filename);
-  const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
-    headers: {
-      'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
-    }
-  });
-  console.log(resources, response)
-  const { path: resourcesPath } = response;
-  payload.image = resourcesPath;
-  const data = await productRepository.createProduct(payload);
-  if (fs.existsSync(pathToFile)) {
-    fs.unlinkSync(pathToFile)
-  }
-  return data;
 }
