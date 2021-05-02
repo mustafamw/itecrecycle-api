@@ -99,6 +99,7 @@ exports.createProduct = async (jwtClaim, payload, image) => {
       'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
     }
   });
+  console.log(resources, response)
   const { path: resourcesPath } = response;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
