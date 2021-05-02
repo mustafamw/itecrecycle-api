@@ -93,17 +93,14 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   const file = await getImageFormUrl(pathImageurl);
   const formData = new FormData();
   formData.append("image", file);
-  const { data: response } = await axios.post(`${resources}/upload.php`, { a: 3 }, {
-    headers: {
-      'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
-    }
-  });
-  const { path: resourcesPath } = response;
-  payload.image = resourcesPath;
-  console.log(response)
-  const data = await productRepository.createProduct(payload);
-  if (fs.existsSync(pathToFile)) {
-    fs.unlinkSync(pathToFile)
-  }
-  return data;
+  const data = await axios.post(`${resources}/upload.php`, { a: 3 });
+  console.log(data)
+  // const { path: resourcesPath } = response;
+  // payload.image = resourcesPath;
+  // console.log(response)
+  // const data = await productRepository.createProduct(payload);
+  // if (fs.existsSync(pathToFile)) {
+  //   fs.unlinkSync(pathToFile)
+  // }
+  // return data;
 }
