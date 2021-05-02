@@ -87,6 +87,7 @@ exports.createProduct = async (jwtClaim, payload, image) => {
     )
   }
   const { destination, mimetype, path, size, filename } = image;
+  console.log(image)
   const pathToFile = `${destination}/${filename}`;
   const formData = new FormData();
   formData.append("image", fs.createReadStream(pathToFile), filename);
