@@ -9,7 +9,6 @@ const { environment } = require('../../../../environments/environment');
 const FormData = require('form-data');
 const expressValidation = require('express-validation');
 const error = require('../../middlewares/error');
-const { getImageFormUrl } = require('../../utils/imageUrl');
 
 exports.getProducts = async (pageNo) => {
   return await productRepository.getProducts(pageNo);
@@ -89,18 +88,21 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   }
   const { destination, mimetype, path, size, filename } = image;
   const pathToFile = `${destination}/${filename}`;
-  const pathImageurl = `${host}/data/uploads/${filename}`;
-  const file = await getImageFormUrl(pathImageurl);
-  const formData = new FormData();
-  formData.append("image", file);
-  const data = await axios.post(`${resources}/upload.php`, { a: 3 });
-  console.log(data)
-  // const { path: resourcesPath } = response;
-  // payload.image = resourcesPath;
-  // console.log(response)
-  // const data = await productRepository.createProduct(payload);
-  // if (fs.existsSync(pathToFile)) {
-  //   fs.unlinkSync(pathToFile)
-  // }
-  // return data;
+  // const { data: response } = `${host}/data/uploads/${filename}`;
+  function base64_encode(file) {
+    var bitmap = fs.readFileSync(file);
+    return new Buffer(bitmap).toString('base64');
+  }
+  const base64 = base64_encode(pathToFile)
+  const { data: resourceResponse } = await axios.post(`${resources}/upload.php`, { 
+    image: base64,
+    name: filename
+  });
+  const { path: resourcesPath } = resourceResponse;
+  payload.image = resourcesPath;
+  const data = await productRepository.createProduct(payload);
+  if (fs.existsSync(pathToFile)) {
+    fs.unlinkSync(pathToFile)
+  }
+  return data;
 }
