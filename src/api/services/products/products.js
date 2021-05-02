@@ -93,13 +93,11 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   const file = await getImageFormUrl(pathImageurl);
   const formData = new FormData();
   formData.append("image", file);
-  console.log(formData)
   const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
     headers: {
       'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
     }
   });
-  console.log(resources, response)
   const { path: resourcesPath } = response;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);

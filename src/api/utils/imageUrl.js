@@ -1,8 +1,8 @@
-const http = require('http');const fs = require('fs');
+const https = require('https');
 
 const getImageFormUrl = (url) => {
     return new Promise ((resolve, reject) => {
-      http.get(url, function(body) {
+      https.get(url, function(body) {
         resolve(body)
       })
     })
