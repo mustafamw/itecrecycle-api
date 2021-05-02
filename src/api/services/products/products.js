@@ -90,6 +90,7 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   const { destination, mimetype, path, size, filename } = image;
   const pathToFile = `${destination}/${filename}`;
   const pathImageurl = `${host}/data/uploads/${filename}`;
+  console.log(pathImageurl)
   const imageBlob = await getImageFormUrl(pathImageurl)
   const formData = new FormData();
   formData.append("image", imageBlob, filename);
