@@ -47,6 +47,6 @@ router.route('/:productId')
   .get(validate(schema.productId), ProductsController.getProductId);
 
 router.route('/create')
-  .post(validate(schema.productCreate), upload.single('image'), ProductsController.createProduct);
+  .post(validate(schema.productAuth), upload.single('image'), validate(schema.productPayload), ProductsController.createProduct);
 
 module.exports = router;

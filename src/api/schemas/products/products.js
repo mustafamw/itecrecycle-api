@@ -20,33 +20,31 @@ const schema = {
         .required(),
     },
   },
-  productCreate: {
+  productAuth: {
     headers: {
       authorization: joi
         .jwt()
         .replace(/bearer /gi, '')
         .valid({ secret })
         .required(),
-    },
-    // body: joi.object().keys({
-    //   title: joi.string()
-    //     .min(1)
-    //     .max(50)
-    //     .required(),
-    //   description: joi.string()
-    //     .min(1)
-    //     .max(50)
-    //     .required(),
-    //   // image: joi.string()
-    //   //   .min(1)
-    //   //   .max(20)
-    //   //   .required(),
-    //   price: joi.number()
-    //     .required(),
-    //   stock: joi.number()
-    //     .min(1)
-    //     .required(),
-    // }).unknown(false),
+    }
+  },
+  productPayload: {
+    body: joi.object().keys({
+      title: joi.string()
+        .min(1)
+        .max(150)
+        .required(),
+      description: joi.string()
+        .min(1)
+        .max(1000)
+        .required(),
+      price: joi.number()
+        .required(),
+      stock: joi.number()
+        .min(1)
+        .required(),
+    }).unknown(false),
   }
 };
 

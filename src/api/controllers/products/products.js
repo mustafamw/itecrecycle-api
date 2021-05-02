@@ -1,6 +1,4 @@
 const productService = require('../../services/products/products');
-var multer  = require('multer')
-var upload = multer({ dest: './public/data/uploads/' })
 
 exports.getProducts = async (req, res, next) => {
   try {

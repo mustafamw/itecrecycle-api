@@ -48,7 +48,7 @@ exports.converter = (err, req, res, next) => {
       status: err.status,
       stack: err.stack,
     });
-  }
+  } 
 
   return handler(convertedError, req, res);
 };
@@ -64,3 +64,23 @@ exports.notFound = (req, res, next) => {
   });
   return handler(err, req, res);
 };
+
+exports.imageRequired = {
+  request: {
+    status: httpStatus.BAD_REQUEST,
+    statusText: 'Bad Request',
+    message: "Validation Error"
+  },
+  errors: [
+    {
+        field: "image",
+        location: "body",
+        messages: [
+            "\"image\" is required"
+        ],
+        types: [
+            "any.required"
+        ]
+    }
+  ]
+}

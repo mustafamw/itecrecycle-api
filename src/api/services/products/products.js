@@ -7,6 +7,8 @@ var fs = require('fs');
 const axios = require('axios');
 const { environment } = require('../../../../environments/environment');
 const FormData = require('form-data');
+const expressValidation = require('express-validation');
+const error = require('../../middlewares/error');
 
 exports.getProducts = async (pageNo) => {
   return await productRepository.getProducts(pageNo);
@@ -78,18 +80,21 @@ exports.createProduct = async (jwtClaim, payload, image) => {
       status: httpStatus.UNAUTHORIZED,
     });
   }
+  if (!image) {
+    throw new expressValidation.ValidationError(
+      error.imageRequired.errors,
+      error.imageRequired.request
+    )
+  }
   const { destination, mimetype, path, size, filename } = image;
-  console.error(image)
   const pathToFile = `${destination}/${filename}`;
   const formData = new FormData();
   formData.append("image", fs.createReadStream(pathToFile), filename);
-  console.error(resources)
   const { data: response } = await axios.post(`${resources}/upload.php`, formData, {
     headers: {
       'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
     }
   });
-  console.error(response)
   const { path: resourcesPath } = response;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
