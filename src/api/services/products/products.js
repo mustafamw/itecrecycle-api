@@ -73,7 +73,7 @@ exports.isProductsValid = async (basket) => {
 };
 
 exports.createProduct = async (jwtClaim, payload, image) => {
-  const { resources } = environment.express;
+  const { resources, host } = environment.express;
   const { roles } = jwtClaim;
   if (!roles.includes('admin')) {
     throw new APIError({
@@ -87,7 +87,6 @@ exports.createProduct = async (jwtClaim, payload, image) => {
     )
   }
   const { destination, mimetype, path, size, filename } = image;
-  console.log(image)
   const pathToFile = `${destination}/${filename}`;
   const formData = new FormData();
   formData.append("image", fs.createReadStream(pathToFile), filename);
@@ -96,11 +95,12 @@ exports.createProduct = async (jwtClaim, payload, image) => {
       'Content-Type': `multipart/form-data; boundary=${formData._boundary}`
     }
   });
+  console.log(filename)
   const { path: resourcesPath } = response;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
-  if (fs.existsSync(pathToFile)) {
-    fs.unlinkSync(pathToFile)
-  }
+  // if (fs.existsSync(pathToFile)) {
+  //   fs.unlinkSync(pathToFile)
+  // }
   return data;
 }
