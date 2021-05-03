@@ -8,7 +8,7 @@ const axios = require('axios');
 const { environment } = require('../../../../environments/environment');
 const expressValidation = require('express-validation');
 const error = require('../../middlewares/error');
-const { imageBase64 } = require('../../utils/imageBase64');
+// const { imageBase64 } = require('../../utils/imageBase64');
 
 exports.getProducts = async (pageNo) => {
   return await productRepository.getProducts(pageNo);
@@ -88,7 +88,11 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   }
   const { destination, mimetype, path, size, filename } = image;
   const pathToFile = `${destination}/${filename}`;
-  const base64 = imageBase64(pathToFile)
+  const imageBase64 = (file) => {
+    const bitmap = fs.readFileSync(file);
+    return new Buffer.from(bitmap).toString('base64');
+  }
+    const base64 = imageBase64(pathToFile)
   const { data: resourceResponse } = await axios.post(`${resources}/upload.php`, { 
     image: base64,
     name: filename
@@ -96,8 +100,8 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   const { path: resourcesPath } = resourceResponse;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
-  // if (fs.existsSync(pathToFile)) {
-  //   fs.unlinkSync(pathToFile)
-  // }
+  if (fs.existsSync(pathToFile)) {
+    fs.unlinkSync(pathToFile)
+  }
   return data;
 }
