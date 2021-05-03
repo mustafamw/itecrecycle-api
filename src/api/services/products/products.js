@@ -80,7 +80,7 @@ exports.createProduct = async (jwtClaim, payload, image) => {
       status: httpStatus.UNAUTHORIZED,
     });
   }
-  if (!image) {
+  if (!image || !image.mimetype.match(/image/g)) {
     throw new expressValidation.ValidationError(
       error.imageRequired.errors,
       error.imageRequired.request
