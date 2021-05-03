@@ -58,7 +58,8 @@ const schema = {
         .required(),
       others: joi.string()
         .min(0)
-        .max(250),
+        .max(250)
+        .allow(''),
     }).unknown(false),
   },
 };

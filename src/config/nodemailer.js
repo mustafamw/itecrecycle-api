@@ -18,11 +18,15 @@ const {
 let transporter;
 if (env === 'development') {
   transporter = nodemailer.createTransport({
-    service: provider,
+    host,
+    secure: false,
     auth: {
       user: username,
       pass: password,
     },
+    tls: {
+        rejectUnauthorized: false
+    }
   });
 } else {
   transporter = nodemailer.createTransport({
