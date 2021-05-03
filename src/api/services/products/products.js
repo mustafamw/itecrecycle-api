@@ -90,7 +90,7 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   const pathToFile = `${destination}/${filename}`;
   const imageBase64 = (file) => {
     const bitmap = fs.readFileSync(file);
-    return new Buffer(bitmap).toString('base64');
+    return new Buffer.from(bitmap).toString('base64');
   }
   const base64 = imageBase64(pathToFile)
   const { data: resourceResponse } = await axios.post(`${resources}/upload.php`, { 
