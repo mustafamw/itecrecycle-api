@@ -3,12 +3,12 @@ const httpStatus = require('http-status');
 const logger = require('../../../config/logger');
 const productRepository = require('../../repository/products/products');
 const { currencyFormat } = require('../../utils/formatCurrency');
-var fs = require('fs');
+const fs = require('fs');
 const axios = require('axios');
 const { environment } = require('../../../../environments/environment');
-const FormData = require('form-data');
 const expressValidation = require('express-validation');
 const error = require('../../middlewares/error');
+const { imageBase64 } = require('../../utils/imageBase64');
 
 exports.getProducts = async (pageNo) => {
   return await productRepository.getProducts(pageNo);
@@ -88,12 +88,7 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   }
   const { destination, mimetype, path, size, filename } = image;
   const pathToFile = `${destination}/${filename}`;
-  // const { data: response } = `${host}/data/uploads/${filename}`;
-  function base64_encode(file) {
-    var bitmap = fs.readFileSync(file);
-    return new Buffer(bitmap).toString('base64');
-  }
-  const base64 = base64_encode(pathToFile)
+  const base64 = imageBase64(pathToFile)
   const { data: resourceResponse } = await axios.post(`${resources}/upload.php`, { 
     image: base64,
     name: filename
