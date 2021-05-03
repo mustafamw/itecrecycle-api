@@ -73,29 +73,28 @@ exports.isProductsValid = async (basket) => {
 };
 
 exports.createProduct = async (jwtClaim, payload, image) => {
-  const { resources, host } = environment.express;
+  const { mimetype, path, filename } = image;
+  const { resources } = environment.express;
   const { roles } = jwtClaim;
   if (!roles.includes('admin')) {
     throw new APIError({
       status: httpStatus.UNAUTHORIZED,
     });
   }
-  if (!image || !image.mimetype.match(/image/g)) {
-    if (image && fs.existsSync(image.path)) {
-      fs.unlinkSync(image.path)
+  if (!image || !(mimetype && mimetype.match(/image/g))) {
+    if (image && fs.existsSync(path)) {
+      fs.unlinkSync(path)
     }
     throw new expressValidation.ValidationError(
       error.imageRequired.errors,
       error.imageRequired.request
     )
   }
-  const { destination, mimetype, path, size, filename } = image;
-  const pathToFile = `${destination}/${filename}`;
   const imageBase64 = (file) => {
     const bitmap = fs.readFileSync(file);
     return new Buffer.from(bitmap).toString('base64');
   }
-  const base64 = imageBase64(pathToFile)
+  const base64 = imageBase64(path)
   const { data: resourceResponse } = await axios.post(`${resources}/upload.php`, { 
     image: base64,
     name: filename
@@ -103,8 +102,8 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   const { path: resourcesPath } = resourceResponse;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
-  if (fs.existsSync(pathToFile)) {
-    fs.unlinkSync(pathToFile)
+  if (fs.existsSync(path)) {
+    fs.unlinkSync(path)
   }
   return data;
 }
