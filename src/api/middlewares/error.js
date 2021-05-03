@@ -42,13 +42,20 @@ exports.converter = (err, req, res, next) => {
       status: err.status,
       stack: err.stack,
     });
+  } else if (err.isAxiosError) {
+    const { message, code } = err.response.data
+    convertedError = new APIError({
+      message,
+      status: code,
+      stack: err.stack,
+    });
   } else if (!(err instanceof APIError)) {
     convertedError = new APIError({
       message: err.message,
       status: err.status,
       stack: err.stack,
     });
-  } 
+  }
 
   return handler(convertedError, req, res);
 };

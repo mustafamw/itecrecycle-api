@@ -11,7 +11,9 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, '../../../../../public/data/uploads'))
   },
   filename: function (req, file, cb) {
-    cb(null, `${uuidv4()}.png`)
+    const { mimetype, originalname } = file;
+    const extension = originalname.split('.')
+    cb(null, `${uuidv4()}.${extension[extension.length - 1].toLowerCase()}`)
   }
 })
 

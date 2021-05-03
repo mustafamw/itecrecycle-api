@@ -81,6 +81,9 @@ exports.createProduct = async (jwtClaim, payload, image) => {
     });
   }
   if (!image || !image.mimetype.match(/image/g)) {
+    if (image && fs.existsSync(image.path)) {
+      fs.unlinkSync(image.path)
+    }
     throw new expressValidation.ValidationError(
       error.imageRequired.errors,
       error.imageRequired.request
