@@ -6,6 +6,22 @@ const {
   secret,
 } = environment.jwt;
 
+const payload = {
+  title: joi.string()
+    .min(1)
+    .max(150)
+    .required(),
+  description: joi.string()
+    .min(1)
+    .max(1000)
+    .required(),
+  price: joi.number()
+    .required(),
+  stock: joi.number()
+    .min(1)
+    .required(),
+};
+
 const schema = {
   products: {
     query: {
@@ -20,6 +36,20 @@ const schema = {
         .required(),
     },
   },
+  productDelete: {
+    params: {
+      productId: joi.number()
+        .min(1)
+        .required(),
+    },
+    headers: {
+      authorization: joi
+        .jwt()
+        .replace(/bearer /gi, '')
+        .valid({ secret })
+        .required(),
+    },
+  },
   productAuth: {
     headers: {
       authorization: joi
@@ -27,25 +57,22 @@ const schema = {
         .replace(/bearer /gi, '')
         .valid({ secret })
         .required(),
-    }
+    },
   },
   productPayload: {
     body: joi.object().keys({
-      title: joi.string()
-        .min(1)
-        .max(150)
-        .required(),
-      description: joi.string()
-        .min(1)
-        .max(1000)
-        .required(),
-      price: joi.number()
-        .required(),
-      stock: joi.number()
-        .min(1)
-        .required(),
+      ...payload,
     }).unknown(false),
-  }
+  },
+};
+
+schema.productUpdate = {
+  body: joi.object().keys({
+    productId: joi.number()
+      .min(1)
+      .required(),
+    ...payload,
+  }).unknown(false),
 };
 
 module.exports = schema;

@@ -4,7 +4,7 @@ const APIError = require('../utils/APIError');
 const { environment } = require('../../../environments/environment');
 const logger = require('../../config/logger');
 
-const env = environment.express.env;
+const { env } = environment.express;
 
 /**
  * Error handler. Send stacktrace only during development
@@ -21,8 +21,8 @@ const handler = (err, req, res, next) => {
   if (env !== 'development') {
     delete response.stack;
   }
-  logger.error(err.stack)
-  console.error(err)
+  logger.error(err.stack);
+  console.error(err);
   res.status(err.status);
   res.json(response);
 };
@@ -43,7 +43,7 @@ exports.converter = (err, req, res, next) => {
       stack: err.stack,
     });
   } else if (err.isAxiosError) {
-    const { message, code } = err.response.data
+    const { message, code } = err.response.data;
     convertedError = new APIError({
       message,
       status: code,
@@ -76,18 +76,18 @@ exports.imageRequired = {
   request: {
     status: httpStatus.BAD_REQUEST,
     statusText: 'Bad Request',
-    message: "Validation Error"
+    message: 'Validation Error',
   },
   errors: [
     {
-        field: "image",
-        location: "body",
-        messages: [
-            "\"image\" is required"
-        ],
-        types: [
-            "any.required"
-        ]
-    }
-  ]
-}
+      field: 'image',
+      location: 'body',
+      messages: [
+        '"image" is required',
+      ],
+      types: [
+        'any.required',
+      ],
+    },
+  ],
+};

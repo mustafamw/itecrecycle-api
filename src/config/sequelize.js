@@ -10,7 +10,7 @@ const {
 } = environment.mysql;
 
 const {
-  env
+  env,
 } = environment.express;
 
 
@@ -22,7 +22,7 @@ const sequelize = new Sequelize(
     host,
     port,
     dialect: 'mysql',
-    logging: env !== 'production'
+    logging: env !== 'production',
   },
 );
 

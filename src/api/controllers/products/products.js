@@ -32,3 +32,26 @@ exports.createProduct = async (req, res, next) => {
   }
 };
 
+exports.updateProduct = async (req, res, next) => {
+  try {
+    const { authorization: jwtClaim } = req.headers;
+    const payload = req.body;
+    const { file: image } = req;
+    const data = await productService.updateProduct(jwtClaim, payload, image);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteProduct = async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+    const { authorization: jwtClaim } = req.headers;
+    const data = await productService.deleteProduct(jwtClaim, productId);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+

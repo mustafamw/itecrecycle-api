@@ -62,6 +62,22 @@ exports.updateProductsStock = async (products) => {
   }));
 };
 
-exports.createProduct = async (payload) => {
-  return await ProductsModel.create(payload);
-}
+exports.createProduct = payload => ProductsModel.create(payload);
+
+exports.updateProduct = payload => ProductsModel.update(
+  {
+    ...payload,
+  },
+  {
+    where: {
+      productId: payload.productId,
+    },
+  },
+);
+
+exports.deleteProduct = productId => ProductsModel.destroy({
+  where: {
+    productId,
+  },
+});
+

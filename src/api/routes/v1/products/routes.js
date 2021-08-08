@@ -1,23 +1,24 @@
+/* eslint-disable no-unused-vars */
 const express = require('express');
 const validate = require('express-validation');
 const ProductsController = require('../../../controllers/products/products');
 const schema = require('../../../schemas/products/products');
-const multer  = require('multer');
+const multer = require('multer');
 const uuidv4 = require('uuid');
 const path = require('path');
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../../../../../public/data/uploads'))
+  destination(req, file, cb) {
+    cb(null, path.join(__dirname, '../../../../../public/data/uploads'));
   },
-  filename: function (req, file, cb) {
+  filename(req, file, cb) {
     const { mimetype, originalname } = file;
-    const extension = originalname.split('.')
-    cb(null, `${uuidv4()}.${extension[extension.length - 1].toLowerCase()}`)
-  }
-})
+    const extension = originalname.split('.');
+    cb(null, `${uuidv4()}.${extension[extension.length - 1].toLowerCase()}`);
+  },
+});
 
-const upload = multer({storage: storage})
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -50,5 +51,11 @@ router.route('/:productId')
 
 router.route('/create')
   .post(validate(schema.productAuth), upload.single('image'), validate(schema.productPayload), ProductsController.createProduct);
+
+router.route('/update')
+  .put(validate(schema.productAuth), upload.single('image'), validate(schema.productUpdate), ProductsController.updateProduct);
+
+router.route('/:productId')
+  .delete(validate(schema.productDelete), ProductsController.deleteProduct);
 
 module.exports = router;

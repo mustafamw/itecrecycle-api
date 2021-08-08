@@ -93,7 +93,6 @@ const checkUserIsActive = async (payload) => {
       message: 'Your account is already activated',
     });
   }
-  return;
 };
 
 const updateUserActive = async (payload) => {
@@ -149,7 +148,6 @@ const updateUserPassword = async (payload) => {
       status: NOT_IMPLEMENTED,
     });
   }
-  return;
 };
 
 exports.signup = async (payload) => {
@@ -166,7 +164,7 @@ exports.signup = async (payload) => {
     userUserId: userId,
     roleRoleId: 2,
   });
-  return await this.getUserDetails({
+  return this.getUserDetails({
     email,
   });
 };
@@ -194,7 +192,7 @@ exports.login = async (payload) => {
 
 exports.activate = async (payload) => {
   await checkUserIsActive(payload);
-  return await updateUserActive(payload);
+  return updateUserActive(payload);
 };
 
 exports.forgotPassword = async (payload) => {

@@ -3,7 +3,7 @@ const hbs = require('nodemailer-express-handlebars');
 const { environment } = require('../../environments/environment');
 
 const {
-  provider,
+  // provider,
   host,
   port,
   username,
@@ -25,8 +25,8 @@ if (env === 'development') {
       pass: password,
     },
     tls: {
-        rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
   });
 } else {
   transporter = nodemailer.createTransport({

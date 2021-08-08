@@ -8,15 +8,11 @@ const axios = require('axios');
 const { environment } = require('../../../../environments/environment');
 const expressValidation = require('express-validation');
 const error = require('../../middlewares/error');
-// const { imageBase64 } = require('../../utils/imageBase64');
+const { imageBase64 } = require('../../utils/imageBase64');
 
-exports.getProducts = async (pageNo) => {
-  return await productRepository.getProducts(pageNo);
-};
+exports.getProducts = async pageNo => productRepository.getProducts(pageNo);
 
-exports.getProductId = async (productId) => {
-  return await productRepository.getProductId(productId);
-};
+exports.getProductId = async productId => productRepository.getProductId(productId);
 
 const isProductIdsValid = (productIds, products) => {
   if (productIds.length !== products.length) {
@@ -63,10 +59,7 @@ const checkProductMatch = (baskets, productsById) => {
 };
 
 exports.isProductsValid = async (basket) => {
-  const productIds = [];
-  basket.forEach((e) => {
-    productIds.push(e.productId);
-  });
+  const productIds = basket.map(e => e.productId);
   const productsById = await productRepository.getProductsById(productIds);
   isProductIdsValid(productsById, productIds);
   return checkProductMatch(basket, productsById);
@@ -83,27 +76,88 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   }
   if (!image || !(mimetype && mimetype.match(/image/g))) {
     if (image && fs.existsSync(path)) {
-      fs.unlinkSync(path)
+      fs.unlinkSync(path);
     }
     throw new expressValidation.ValidationError(
       error.imageRequired.errors,
-      error.imageRequired.request
-    )
+      error.imageRequired.request,
+    );
   }
-  const imageBase64 = (file) => {
-    const bitmap = fs.readFileSync(file);
-    return new Buffer.from(bitmap).toString('base64');
-  }
-  const base64 = imageBase64(path)
-  const { data: resourceResponse } = await axios.post(`${resources}/upload.php`, { 
+  const base64 = imageBase64(path);
+  const { data: resourceResponse } = await axios.post(`${resources}/upload.php`, {
     image: base64,
-    name: filename
+    name: filename,
   });
   const { path: resourcesPath } = resourceResponse;
   payload.image = resourcesPath;
   const data = await productRepository.createProduct(payload);
   if (fs.existsSync(path)) {
-    fs.unlinkSync(path)
+    fs.unlinkSync(path);
   }
   return data;
-}
+};
+
+exports.updateProduct = async (jwtClaim, payload, image) => {
+  const { mimetype, path, filename } = image || {};
+  const { resources } = environment.express;
+  const { roles } = jwtClaim;
+  if (!roles.includes('admin')) {
+    throw new APIError({
+      status: httpStatus.UNAUTHORIZED,
+    });
+  }
+  const { data } = await this.getProductId(payload.productId);
+  if (!data) {
+    throw new APIError({
+      status: httpStatus.NOT_FOUND,
+      message: 'Product Id Invalid',
+    });
+  }
+  if (mimetype && !(mimetype.match(/image/g))) {
+    if (image && fs.existsSync(path)) {
+      fs.unlinkSync(path);
+    }
+    throw new expressValidation.ValidationError(
+      error.imageRequired.errors,
+      error.imageRequired.request,
+    );
+  }
+  if (path) {
+    const imageResources = data.image.replace(`${resources}/`, '');
+    const base64 = imageBase64(path);
+    const { data: resourceResponse } = await axios.post(`${resources}/upload-exist.php`, {
+      image: base64,
+      name: filename,
+      imageResources,
+    });
+    const { path: resourcesPath } = resourceResponse;
+    payload.image = resourcesPath;
+  }
+  await productRepository.updateProduct(payload);
+  if (path && fs.existsSync(path)) {
+    fs.unlinkSync(path);
+  }
+  return payload;
+};
+
+exports.deleteProduct = async (jwtClaim, productId) => {
+  const { resources } = environment.express;
+  const { roles } = jwtClaim;
+  if (!roles.includes('admin')) {
+    throw new APIError({
+      status: httpStatus.UNAUTHORIZED,
+    });
+  }
+  const { data } = await this.getProductId(productId);
+  if (!data) {
+    throw new APIError({
+      status: httpStatus.NOT_FOUND,
+      message: 'Product Id Invalid',
+    });
+  }
+  const imageResources = data.image.replace(`${resources}/`, '');
+  await axios.post(`${resources}/delete.php`, {
+    imageResources,
+  });
+  await productRepository.deleteProduct(productId);
+};

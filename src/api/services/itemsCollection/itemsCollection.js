@@ -4,7 +4,8 @@ const itemsCollection = require('../../services/emails/itemsCollection/itemsColl
 const { dataResponse } = require('../../utils/dataResponse');
 
 exports.itemsCollection = async (jwtPayload, payload) => {
-  const itemsCollectionDetails = await itemsCollectionRepository.itemsCollection(jwtPayload, payload);
+  const itemsCollectionDetails =
+  await itemsCollectionRepository.itemsCollection(jwtPayload, payload);
   const userDetails = await usersRepository.getUserDetails({ userId: jwtPayload.uid });
   await itemsCollection.email({
     userDetails,
