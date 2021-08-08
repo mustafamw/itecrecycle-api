@@ -64,13 +64,13 @@ exports.updateProductsStock = async (products) => {
 
 exports.createProduct = payload => ProductsModel.create(payload);
 
-exports.updateProduct = payload => ProductsModel.update(
+exports.updateProduct = (productId, payload) => ProductsModel.update(
   {
     ...payload,
   },
   {
     where: {
-      productId: payload.productId,
+      productId,
     },
   },
 );

@@ -36,6 +36,20 @@ const schema = {
         .required(),
     },
   },
+  productUpdateParamsAndHeader: {
+    params: {
+      productId: joi.number()
+        .min(1)
+        .required(),
+    },
+    headers: {
+      authorization: joi
+        .jwt()
+        .replace(/bearer /gi, '')
+        .valid({ secret })
+        .required(),
+    },
+  },
   productDelete: {
     params: {
       productId: joi.number()
@@ -64,15 +78,6 @@ const schema = {
       ...payload,
     }).unknown(false),
   },
-};
-
-schema.productUpdate = {
-  body: joi.object().keys({
-    productId: joi.number()
-      .min(1)
-      .required(),
-    ...payload,
-  }).unknown(false),
 };
 
 module.exports = schema;

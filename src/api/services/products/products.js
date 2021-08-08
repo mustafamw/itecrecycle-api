@@ -70,6 +70,9 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   const { resources } = environment.express;
   const { roles } = jwtClaim;
   if (!roles.includes('admin')) {
+    if (image && fs.existsSync(path)) {
+      fs.unlinkSync(path);
+    }
     throw new APIError({
       status: httpStatus.UNAUTHORIZED,
     });
@@ -97,17 +100,23 @@ exports.createProduct = async (jwtClaim, payload, image) => {
   return data;
 };
 
-exports.updateProduct = async (jwtClaim, payload, image) => {
+exports.updateProduct = async (jwtClaim, productId, payload, image) => {
   const { mimetype, path, filename } = image || {};
   const { resources } = environment.express;
   const { roles } = jwtClaim;
   if (!roles.includes('admin')) {
+    if (image && fs.existsSync(path)) {
+      fs.unlinkSync(path);
+    }
     throw new APIError({
       status: httpStatus.UNAUTHORIZED,
     });
   }
-  const { data } = await this.getProductId(payload.productId);
+  const { data } = await this.getProductId(productId);
   if (!data) {
+    if (image && fs.existsSync(path)) {
+      fs.unlinkSync(path);
+    }
     throw new APIError({
       status: httpStatus.NOT_FOUND,
       message: 'Product Id Invalid',
@@ -133,7 +142,7 @@ exports.updateProduct = async (jwtClaim, payload, image) => {
     const { path: resourcesPath } = resourceResponse;
     payload.image = resourcesPath;
   }
-  await productRepository.updateProduct(payload);
+  await productRepository.updateProduct(productId, payload);
   if (path && fs.existsSync(path)) {
     fs.unlinkSync(path);
   }

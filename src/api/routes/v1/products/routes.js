@@ -49,11 +49,11 @@ router.route('/')
 router.route('/:productId')
   .get(validate(schema.productId), ProductsController.getProductId);
 
-router.route('/create')
+router.route('/')
   .post(validate(schema.productAuth), upload.single('image'), validate(schema.productPayload), ProductsController.createProduct);
 
-router.route('/update')
-  .put(validate(schema.productAuth), upload.single('image'), validate(schema.productUpdate), ProductsController.updateProduct);
+router.route('/:productId')
+  .put(validate(schema.productUpdateParamsAndHeader), upload.single('image'), validate(schema.productPayload), ProductsController.updateProduct);
 
 router.route('/:productId')
   .delete(validate(schema.productDelete), ProductsController.deleteProduct);

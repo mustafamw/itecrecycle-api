@@ -34,10 +34,11 @@ exports.createProduct = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
   try {
+    const { productId } = req.params;
     const { authorization: jwtClaim } = req.headers;
     const payload = req.body;
     const { file: image } = req;
-    const data = await productService.updateProduct(jwtClaim, payload, image);
+    const data = await productService.updateProduct(jwtClaim, productId, payload, image);
     res.json(data);
   } catch (error) {
     next(error);
