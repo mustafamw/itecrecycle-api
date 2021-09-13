@@ -50,10 +50,10 @@ router.route('/:productId')
   .get(validate(schema.productId), ProductsController.getProductId);
 
 router.route('/')
-  .post(validate(schema.productAuth), upload.single('image'), validate(schema.productPayload), ProductsController.createProduct);
+  .post(validate(schema.productAuth), upload.single('image'), validate(schema.productCreatePayload), ProductsController.createProduct);
 
 router.route('/:productId')
-  .put(validate(schema.productUpdateParamsAndHeader), upload.single('image'), validate(schema.productPayload), ProductsController.updateProduct);
+  .put(validate(schema.productUpdateParamsAndHeader), upload.single('image'), validate(schema.productUpdatePayload), ProductsController.updateProduct);
 
 router.route('/:productId')
   .delete(validate(schema.productDelete), ProductsController.deleteProduct);

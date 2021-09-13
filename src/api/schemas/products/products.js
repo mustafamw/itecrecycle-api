@@ -6,7 +6,7 @@ const {
   secret,
 } = environment.jwt;
 
-const payload = {
+const payloadRequired = {
   title: joi.string()
     .min(1)
     .max(150)
@@ -20,6 +20,18 @@ const payload = {
   stock: joi.number()
     .min(1)
     .required(),
+};
+
+const payload = {
+  title: joi.string()
+    .min(1)
+    .max(150),
+  description: joi.string()
+    .min(1)
+    .max(1000),
+  price: joi.number(),
+  stock: joi.number()
+    .min(1),
 };
 
 const schema = {
@@ -73,7 +85,12 @@ const schema = {
         .required(),
     },
   },
-  productPayload: {
+  productCreatePayload: {
+    body: joi.object().keys({
+      ...payloadRequired,
+    }).unknown(false),
+  },
+  productUpdatePayload: {
     body: joi.object().keys({
       ...payload,
     }).unknown(false),
