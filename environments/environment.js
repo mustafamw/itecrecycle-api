@@ -1,11 +1,11 @@
 const environment = {
   jwt: {
     issuer: process.env.DOMAIN,
-    expire: JSON.parse(process.env.JWT_EXPIRE.replaceAll("'", '"')),
+    expire: JSON.parse(process.env.JWT_EXPIRE.replace(/'/g, '"')),
     secret: process.env.JWT_SECRET,
     secretActivate: process.env.JWT_SECRET_ACTIVATE,
     secretPasswordForgot: process.env.JWT_SECRET_PASSWORD_FORGOT,
-    expirePasswordForgot: JSON.parse(process.env.JWT_EXPIRE_PASSWORD_FORGOT.replaceAll("'", '"')),
+    expirePasswordForgot: JSON.parse(process.env.JWT_EXPIRE_PASSWORD_FORGOT.replace(/'/g, '"')),
     algorithm: process.env.JWT_ALGORITHM,
   },
   express: {
