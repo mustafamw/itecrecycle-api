@@ -36,7 +36,7 @@ if (env === 'development') {
       user: username,
       pass: password,
     },
-    secure,
+    secure: JSON.parse(secure),
   });
 }
 
